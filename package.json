@@ -1,9 +1,11 @@
 {
-  "name": "chaindata-torrent-creater",
+  "name": "@bfchain/devkit-chaindata-torrent-creater",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
-  "bin": "dist/bin.js",
+  "bin": {
+    "chaindata-torrent-creater": "dist/bin.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
