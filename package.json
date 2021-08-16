@@ -1,12 +1,13 @@
 {
   "name": "@bfchain/devkit-chaindata-torrent-creater",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
-  "main": "dist/index.js",
+  "main": "build/index.js",
   "bin": {
-    "chaindata-torrent-creater": "dist/bin.js"
+    "chaindata-torrent-creater": "build/bin.js"
   },
   "scripts": {
+    "p": "npm publ --access public",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
