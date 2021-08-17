@@ -15,3 +15,7 @@ chaindata-torrent-creater
 ```bash
 chaindata-torrent-creater --bsaeurl "BASE_URL" --input "INPUT_FOLDER" --output "OUTPUT"
 ```
+
+# 参考文献
+
+[bep_0019.rst_post](http://www.bittorrent.org/beps/bep_0019.html)

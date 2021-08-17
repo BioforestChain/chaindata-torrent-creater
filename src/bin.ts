@@ -166,22 +166,22 @@ const filterMapQuestion = async <R = string>(
     return askOutputPath(path.resolve(process.cwd(), answer));
   };
 
-  const outputTorrent = await askOutputPath(
-    (
-      await getArg(["o", "output"], () => askYorN(defaultFilename))
-    ).value
-  );
+  let outputTorrentArg = (await getArg(["o", "output"])).value;
+  const outputTorrent = await (outputTorrentArg
+    ? askOutputPath(outputTorrentArg)
+    : askYorN(defaultFilename));
 
   const publicBaseUrl = (
     await getArg(["u", "url", "b", "baseurl"], () =>
       filterMapQuestion(
-        `请输入连接的公网路径(http[s]://domain.com/),在这个网页下可以访问到 "${path.relative(
+        `请输入连接的公网路径(http[s]://domain.com/FOLDER_NAME),在这个网页下可以访问到 "${path.relative(
           process.cwd(),
           inputFolder
         )}" 内的文件`,
         {
           filter: (baseUrl) =>
             baseUrl.startsWith("https://") || baseUrl.startsWith("http://"),
+          map: (baseUrl) => (baseUrl.trim() + "/").replace(/\/{2,}/g, "/"),
         }
       )
     )

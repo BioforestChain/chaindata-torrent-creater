@@ -1,17 +1,27 @@
 import createTorrent from "create-torrent";
 import * as fs from "fs";
 import * as path from "path";
-import * as url from "url";
+import * as http from "http";
 
 const pkg = JSON.parse(
   fs.readFileSync(path.join(__dirname, "../package.json"), "utf-8")
 );
-export function createChainDataTorrent(
+export async function createChainDataTorrent(
   inputFolder: string,
   outputTorrent: string,
   baseUrl: string
 ) {
+  const baseUrlInfo = new URL(baseUrl);
+  const baseUrlPathnames = baseUrlInfo.pathname.split("/").filter(Boolean);
+
+  if (baseUrlPathnames.length === 0) {
+    throw new Error(`no found {FOLDER_NAME} in baseUrl`);
+  }
+  const name = baseUrlPathnames.pop();
+  baseUrl = new URL(baseUrlPathnames.join("/") + "/", baseUrlInfo.origin).href;
+
   const opts = {
+    name: name,
     comment: "BFChain ChainData v1",
     createdBy: `${pkg.name}@${pkg.version}`,
     pieceLength: 1024 * 1024 * 2,
@@ -22,11 +32,22 @@ export function createChainDataTorrent(
         "ws://p2ptracker.bfchain.com",
       ],
     ],
-    urlList: fs
-      .readdirSync(inputFolder)
-      .map((name) => new url.URL(name, baseUrl).href),
+    urlList: [baseUrl],
   };
+  const checkUrl = new URL(
+    name + "/" + fs.readdirSync(inputFolder).shift()!,
+    baseUrl
+  ).href;
   console.log(opts);
+  await new Promise<void>((resolve, reject) => {
+    http.get(checkUrl, (res) => {
+      if (res.statusCode !== 200) {
+        reject(new Error(`请确保${checkUrl}是可访问的`));
+      } else {
+        resolve();
+      }
+    });
+  });
 
   return new Promise<void>((resolve, reject) => {
     createTorrent(inputFolder, opts, (err, torrent) => {
